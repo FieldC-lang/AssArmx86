@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Backdrop – Pixel Art Backgrounds for Games</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&display=swap">
+<style>
+:root{--bg:#e4ecf1;--card:#f8fbfd;--ink:#10283a;--mute:#4b6073;--line:#b4c6d3;--acc:#e8590c;--blue:#1c7ed6;--ok:#2b8a3e;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1b27;--card:#162736;--ink:#e8f1f8;--mute:#9db3c4;--line:#2b4457;--acc:#ff9d5c;--blue:#74c0fc;--ok:#69db7c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1b27;--card:#162736;--ink:#e8f1f8;--mute:#9db3c4;--line:#2b4457;--acc:#ff9d5c;--blue:#74c0fc;--ok:#69db7c;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+h1,h2{font-family:"Pixelify Sans",ui-monospace,Menlo,monospace;margin:0}
+h1{font-size:30px;line-height:1.1}
+h2{font-size:22px;line-height:1.2;margin-bottom:8px}
+.sub{color:var(--mute);font-size:14px;margin:4px 0 0}
+.prog{min-width:210px;font-size:13px;color:var(--mute)}
+.bar{height:10px;border:2px solid var(--ink);margin-top:5px;background:var(--card)}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+#chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:8px}
+.chip{flex:0 0 auto;border:2px solid var(--ink);background:var(--card);padding:5px 11px;font-size:13px;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--ink);color:var(--bg)}
+.chip:disabled{opacity:.55;cursor:not-allowed}
+.chip.d::after{content:" ✓";color:var(--ok);font-weight:700}
+.chip.on.d::after{color:inherit}
+.grid{display:grid;grid-template-columns:minmax(0,350px) minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--line);padding:16px}
+p{margin:0 0 10px}
+.lvl{color:var(--mute);font-size:13px;margin:0 0 4px}
+.tip{border-left:4px solid var(--acc);padding:6px 10px;font-size:13px;color:var(--mute)}
+h3{font-size:14px;margin:14px 0 4px}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:14px}
+li::before{content:"";flex:0 0 20px;height:20px;border:2px solid var(--ink);margin-top:1px;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff}
+li.ok::before{content:"✓";background:var(--ok)}
+.win{margin-top:12px;padding:12px;border:2px solid var(--ink);background:var(--ok);color:#04200e}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
+.ly{display:inline-flex;align-items:center;gap:4px;margin-right:6px}
+.ly input{width:18px;height:18px;accent-color:var(--blue)}
+.btn{border:2px solid var(--ink);background:var(--card);padding:6px 11px;cursor:pointer;font-size:13px}
+.btn[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.sw{width:36px;height:36px;border:2px solid var(--ink);cursor:pointer;padding:0}
+.sw[aria-pressed=true]{outline:3px solid var(--acc);outline-offset:2px}
+#c{display:block;width:100%;aspect-ratio:16/9;box-shadow:0 0 0 3px var(--ink);image-rendering:pixelated;touch-action:none;cursor:crosshair}
+.gray{filter:grayscale(1)}
+.pvbox{margin-top:18px}
+#pv{display:block;width:384px;max-width:100%;height:auto;image-rendering:pixelated;box-shadow:0 0 0 2px var(--ink);margin-bottom:6px}
+.cap{font-size:13px;color:var(--mute);margin:0}
+@media(prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div><h1>Backdrop</h1><p class="sub">Build game backgrounds in pixel art, one layer at a time.</p></div>
+<div class="prog"><span id="pt"></span><div class="bar"><i id="pb"></i></div></div>
+</header>
+<nav id="chips" aria-label="Lessons"></nav>
+<div class="grid">
+<section class="card">
+<p class="lvl" id="lv"></p><h2 id="lt"></h2>
+<p id="ll"></p><p class="tip" id="lp"></p>
+<h3>Objectives</h3><ul id="ob"></ul>
+<div class="win" id="win" hidden aria-live="polite"><b>All objectives complete. Nice work!</b><br><button class="btn" id="nx" style="margin-top:8px"></button></div>
+</section>
+<section class="card">
+<div class="row" id="ly"></div>
+<div class="row" id="tl">
+<button class="btn" data-t="pen">Pencil</button>
+<button class="btn" data-t="dither">Dither</button>
+<button class="btn" data-t="rect">Rectangle</button>
+<button class="btn" data-t="fill">Fill</button>
+<button class="btn" data-t="erase">Eraser</button>
+<button class="btn" id="un">Undo</button>
+<button class="btn" id="cl">Clear layer</button>
+<button class="btn" id="sq">Squint</button>
+</div>
+<div class="row" id="pl"></div>
+<canvas id="c" width="576" height="324" role="img" aria-label="Pixel art scene canvas"></canvas>
+<div class="pvbox"><canvas id="pv"></canvas><p class="cap">Loop preview: your scene repeated side by side. Look for a seam in the middle.</p></div>
+</section>
+</div>
+</div>
+<script>
+const $=s=>document.querySelector(s),W=48,H=27;
+const cv=$('#c'),ctx=cv.getContext('2d');
+let L,A,act=0,vis=[],hist=[],tool='pen',col=0,sqd=false,dn=false,lx=0,lz=0,sx=0,sy=0,base=[];
+const SKY=['#1b1f4b','#3a4a9a','#6f8fd6','#f2b880'],SKY5=[...SKY,'#fff2c2'],FAR=['#5f78b0','#7d93c4','#9eb1d8'],NEAR=['#2d5a52','#3e7566','#58927c'],FG=['#0f2420','#1a3b33','#27544a'];
+const sky=d=>{for(let i=0;i<d.length;i++){const x=i%W,y=i/W|0,t=y/(H-1)*3;d[i]=Math.min(3,Math.max(0,Math.round(t+((x+y)%2?.25:-.25))))}};
+const hill=(b,a,f,p)=>d=>{for(let x=0;x<W;x++){const t=Math.round(b+a*Math.sin(x*f+p)+a/2*Math.sin(x*f*2.3+p*1.7));for(let y=Math.max(0,t);y<H;y++)d[y*W+x]=y===t?2:1}};
+const kinds=a=>new Set(a.filter(v=>v>=0)).size;
+const avg=a=>{const t=a.filter(v=>v>=0);return t.length?t.reduce((s,v)=>s+v,0)/t.length:null};
+const med=a=>{const t=a.filter(v=>v>=0).sort((p,q)=>p-q);return t.length?t[t.length>>1]:null};
+const dith=d=>{let n=0;for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x,v=d[i],w=d[i-1];if(v>=0&&w>=0&&w!==v&&d[i+1]===w&&d[i-W]===w&&d[i+W]===w)n++}return n};
+const ord=Z=>{const m=Z[0].my;return m.every(v=>v!==null)&&m[0]<m[1]&&m[1]<m[2]&&m[2]<m[3]};
+const LS={n:'Sky',pal:SKY,lock:1,g:sky};
+const S=[
+{id:1,t:'Sky bands',layers:[{n:'Sky',pal:SKY}],
+learn:'Every background starts with the sky. A pixel art gradient is a few flat colour bands, dark at the top and warm and light at the horizon, which pulls the eye toward the middle of the scene.',
+tip:'Use Rectangle to block in each band, then clean up the edges with the pencil. Four bands is plenty.',
+obj:[['Fill the whole sky',Z=>Z[0].f===W*H],['Use all 4 colour bands',Z=>Z[0].u===4],['Darkest band on top, lightest at the horizon',ord]]},
+{id:2,t:'Dithered gradients',layers:[{n:'Sky',pal:SKY}],
+learn:'Hard band edges look stripy. Dithering swaps two colours in a checkerboard along the edge, so the eye blends them into a smooth step without adding any new colour.',
+tip:'Paint the bands first, then switch to Dither and drag along each boundary. It only places pixels on alternating squares.',
+obj:[['Fill the whole sky',Z=>Z[0].f===W*H],['Blend bands with a checkerboard dither (25+ pixels)',(Z,D)=>dith(D[0])>=25],['Keep the order: dark on top, light at the horizon',ord]]},
+{id:3,t:'Depth with layers',layers:[LS,{n:'Far hills',pal:FAR},{n:'Near hills',pal:NEAR}],
+learn:'Depth comes from stacking silhouettes. Distant layers are lighter, hazier and closer to the sky colour (atmospheric perspective). Near layers are darker, greener and more contrasty.',
+tip:'Select Far hills first and paint a ridge with Rectangle and Pencil. Use the lightest tone along the ridge as a rim. Then do Near hills lower on screen.',
+obj:[['Far hills: 200+ pixels',Z=>Z[1].f>=200],['Near hills: 300+ pixels',Z=>Z[2].f>=300],['Near ridge sits lower on screen than the far ridge',Z=>{const a=avg(Z[1].top),b=avg(Z[2].top);return a!==null&&b!==null&&b>a+1}],['Far ridge uses 4+ different heights',Z=>kinds(Z[1].top)>=4]]},
+{id:4,t:'Seamless parallax',layers:[LS,{n:'Far hills',pal:FAR}],
+learn:'In a side-scroller the background layers scroll at different speeds and loop. For a layer to loop, its left and right edges must meet, or you get a visible jump every time it wraps.',
+tip:'Start and end your ridge at nearly the same height, then check the loop preview for a seam in the middle.',
+obj:[['Far hills: 200+ pixels',Z=>Z[1].f>=200],['Ridge uses 5+ different heights',Z=>kinds(Z[1].top)>=5],['Left and right ridge edges meet within 1 pixel',Z=>{const t=Z[1].top;return t[0]>=0&&t[W-1]>=0&&Math.abs(t[0]-t[W-1])<=1}]]},
+{id:5,t:'Foreground framing',layers:[LS,{n:'Far hills',pal:FAR,lock:1,g:hill(15,2.5,.25,1)},{n:'Near hills',pal:NEAR,lock:1,g:hill(19,3,.18,4)},{n:'Foreground',pal:FG}],
+learn:'The foreground is the darkest, simplest layer. It frames the scene and gives the eye an edge to stand on. Keep detail low here so it never competes with the gameplay area behind it.',
+tip:'The three layers behind are locked. Paint a ground strip, then raise a few trees or rocks above it.',
+obj:[['Ground covers the bottom 5 rows',Z=>Z[3].top.filter(t=>t>=0&&t<=H-5).length>=W*.95],['Add trees or rocks: 6+ columns rising 5+ pixels above the ground',Z=>{const b=med(Z[3].top);return b!==null&&Z[3].top.filter(t=>t>=0&&t<=b-5).length>=6}],['Use all 3 foreground tones',Z=>Z[3].u===3]]},
+{id:6,t:'Full scene and value',layers:[{n:'Sky',pal:SKY5},{n:'Far hills',pal:FAR},{n:'Near hills',pal:NEAR},{n:'Foreground',pal:FG}],
+learn:'Now combine everything. Good backgrounds read in greyscale first: light sky, mid-tone distance, dark foreground. Add one bright focal point, like a sun or moon, and let everything else support it.',
+tip:'Build from back to front. Press Squint to see your values in greyscale, and fix any layer that blends into its neighbour.',
+obj:[['Every layer has 150+ pixels',Z=>Z.every(z=>z.f>=150)],['Add a sun or moon: 12+ pixels of the brightest sky colour',Z=>Z[0].c[4]>=12],['Check your values with Squint',()=>sqd]]}
+];
+const K='backdrop-v1';let P={done:{},work:{},cur:0};
+try{Object.assign(P,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
+P.done=P.done||{};P.work=P.work||{};
+const sv=()=>{try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}};
+let cur=Math.min(+P.cur||0,S.length-1);
+const D=()=>A[act];
+const snap=()=>{hist.push([act,D().slice()]);if(hist.length>40)hist.shift()};
+const save=()=>{P.work[L.id]=A.map(d=>d.slice());sv()};
+const undo=()=>{if(hist.length){const u=hist.pop();A[u[0]]=u[1];draw();check();save()}};
+const px=i=>{for(let k=A.length-1;k>=0;k--){if(vis[k]){const v=A[k][i];if(v>=0)return L.layers[k].pal[v]}}return null};
+const stat=(d,np)=>{const c=Array(np).fill(0),top=Array(W).fill(-1),cy=Array(np).fill(0);let f=0;
+for(let i=0;i<d.length;i++){const v=d[i];if(v>=0){c[v]++;f++;cy[v]+=i/W|0;const x=i%W;if(top[x]<0)top[x]=i/W|0}}
+return{c,f,top,u:c.filter(Boolean).length,my:cy.map((s,k)=>c[k]?s/c[k]:null)}};
+function head(){const d=Object.keys(P.done).length;$('#pt').textContent=d+'/'+S.length+' lessons done, '+d*100+' XP';$('#pb').style.width=d/S.length*100+'%'}
+function chips(){$('#chips').innerHTML=S.map((l,i)=>`<button class="chip${i===cur?' on':''}${P.done[l.id]?' d':''}" data-i="${i}">${l.id}. ${l.t}</button>`).join('')}
+function ui(){
+$('#ly').innerHTML=L.layers.map((l,k)=>`<span class="ly"><input type="checkbox" data-v="${k}" ${vis[k]?'checked':''} aria-label="Show ${l.n}"><button class="chip${k===act?' on':''}" data-l="${k}"${l.lock?' disabled':''}>${l.n}${l.lock?' (locked)':''}</button></span>`).join('');
+$('#pl').innerHTML=L.layers[act].pal.map((c,i)=>`<button class="sw" data-i="${i}" style="background:${c}" aria-label="Colour ${i+1}" aria-pressed="${i===col}"></button>`).join('');
+document.querySelectorAll('[data-t]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===tool));
+$('#sq').setAttribute('aria-pressed',cv.classList.contains('gray'))}
+function draw(){
+const s=cv.width/W,cs=[];
+for(let i=0;i<W*H;i++)cs.push(px(i));
+for(let y=0;y<H;y++)for(let x=0;x<W;x++){ctx.fillStyle=cs[y*W+x]||((x+y)%2?'#c9cfdb':'#dfe3ec');ctx.fillRect(x*s,y*s,s,s)}
+ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;ctx.beginPath();
+for(let k=1;k<W;k++){ctx.moveTo(k*s,0);ctx.lineTo(k*s,cv.height)}
+for(let k=1;k<H;k++){ctx.moveTo(0,k*s);ctx.lineTo(cv.width,k*s)}
+ctx.stroke();
+const p=$('#pv'),q=p.getContext('2d');p.width=W*2;p.height=H;
+for(let i=0;i<W*H;i++){q.fillStyle=cs[i]||'#8ecae6';const x=i%W,y=i/W|0;q.fillRect(x,y,1,1);q.fillRect(x+W,y,1,1)}}
+function check(){
+const Z=A.map((d,k)=>stat(d,L.layers[k].pal.length)),r=L.obj.map(o=>!!o[1](Z,A));
+$('#ob').innerHTML=L.obj.map((o,i)=>`<li class="${r[i]?'ok':''}">${o[0]}</li>`).join('');
+const all=r.every(Boolean);$('#win').hidden=!all;
+$('#nx').textContent=cur<S.length-1?'Next lesson':'Start over';
+if(all&&!P.done[L.id]){P.done[L.id]=1;sv();head();chips()}}
+function load(i){
+cur=i;P.cur=i;L=S[i];const w=P.work[L.id]||[];
+A=L.layers.map((l,k)=>{const d=!l.lock&&Array.isArray(w[k])&&w[k].length===W*H?w[k].slice():Array(W*H).fill(-1);if(l.lock)l.g(d);return d});
+vis=L.layers.map(()=>true);act=L.layers.findIndex(l=>!l.lock);hist=[];tool='pen';col=0;sqd=false;
+cv.classList.remove('gray');$('#pv').classList.remove('gray');
+$('#lv').textContent='Lesson '+L.id+' of '+S.length;$('#lt').textContent=L.t;$('#ll').textContent=L.learn;$('#lp').textContent='Tip: '+L.tip;
+ui();chips();draw();check();sv()}
+function flood(a,b){const d=D(),t=d[b*W+a];if(t===col)return;const st=[[a,b]];
+while(st.length){const[x,y]=st.pop();if(x<0||y<0||x>=W||y>=H||d[y*W+x]!==t)continue;d[y*W+x]=col;st.push([x+1,y],[x-1,y],[x,y+1],[x,y-1])}}
+function stroke(a,b,c,e,first){const d=D(),m=Math.max(Math.abs(c-a),Math.abs(e-b))||1;
+for(let t=0;t<=m;t++){const x=Math.round(a+(c-a)*t/m),y=Math.round(b+(e-b)*t/m),i=y*W+x;
+if(tool==='fill'){if(first)flood(x,y)}
+else if(tool==='erase')d[i]=-1;
+else if(tool==='dither'){if((x+y)%2===0)d[i]=col}
+else d[i]=col}
+draw();check()}
+function rect(a,b,c,e){const d=D();d.splice(0,W*H,...base);
+for(let y=Math.min(b,e);y<=Math.max(b,e);y++)for(let x=Math.min(a,c);x<=Math.max(a,c);x++)d[y*W+x]=col;
+draw();check()}
+const at=e=>{const r=cv.getBoundingClientRect(),f=(v,o,s,n)=>Math.max(0,Math.min(n-1,Math.floor((v-o)/s*n)));return[f(e.clientX,r.left,r.width,W),f(e.clientY,r.top,r.height,H)]};
+cv.onpointerdown=e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);snap();dn=true;[lx,lz]=at(e);sx=lx;sy=lz;base=D().slice();if(tool==='rect')rect(sx,sy,sx,sy);else stroke(lx,lz,lx,lz,true)};
+cv.onpointermove=e=>{if(!dn)return;const[x,y]=at(e);if(tool==='rect')rect(sx,sy,x,y);else stroke(lx,lz,x,y,false);lx=x;lz=y};
+cv.onpointerup=cv.onpointercancel=()=>{if(dn){dn=false;save()}};
+$('#chips').onclick=e=>{const b=e.target.closest('.chip');if(b)load(+b.dataset.i)};
+$('#ly').onclick=e=>{const b=e.target.closest('[data-l]');if(b&&!b.disabled){act=+b.dataset.l;col=0;ui()}};
+$('#ly').onchange=e=>{const k=e.target.dataset.v;if(k!==undefined){vis[+k]=e.target.checked;draw()}};
+$('#pl').onclick=e=>{const b=e.target.closest('.sw');if(b){col=+b.dataset.i;if(tool==='erase')tool='pen';ui()}};
+$('#tl').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+if(b.dataset.t)tool=b.dataset.t;
+else if(b.id==='un')undo();
+else if(b.id==='cl'){snap();D().fill(-1);draw();check();save()}
+else if(b.id==='sq'){const g=cv.classList.toggle('gray');$('#pv').classList.toggle('gray',g);if(g)sqd=true;check()}
+ui()};
+$('#nx').onclick=()=>load((cur+1)%S.length);
+head();load(cur);
+</script>
+</body>
+</html>
